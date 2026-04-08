@@ -83,8 +83,9 @@ void updateStatus(LinkedList *l, char *resi) {
         if (strcmp(current->data.resi, resi) == 0) {
             strcpy(current->status, "Terkirim");
             break;
+        } else {
+            current = current->next;
         }
-        current = current->next;
     }
 }
 
@@ -92,25 +93,26 @@ void tampilLinkedList(LinkedList *l) {
     if (l->head == NULL) {
         printf("Linked List kosong, belum ada paket apapun.\n");
         return;
+    } else {
+        printf("\n===== SEMUA PAKET (Antrean + Terkirim) =====\n");
+        printf("%-4s %-15s %-10s %-20s %-12s %-10s\n",
+            "No", "Nama", "Resi", "Alamat", "Estimasi", "Status");
+        printf("-----------------------------------------------------------------------\n");
+        Node *current = l->head;
+        int no = 1;
+        while (current != NULL) {
+            printf("%-4d %-15s %-10s %-20s %-12s %-10s\n",
+                no++,
+                current->data.nama,
+                current->data.resi,
+                current->data.alamat,
+                current->data.estimasi,
+                current->status);
+            current = current->next;
+        }
+        printf("-----------------------------------------------------------------------\n");
+        printf("Total paket: %d\n", l->size);
     }
-    printf("\n===== SEMUA PAKET (Antrean + Terkirim) =====\n");
-    printf("%-4s %-15s %-10s %-20s %-12s %-10s\n",
-           "No", "Nama", "Resi", "Alamat", "Estimasi", "Status");
-    printf("-----------------------------------------------------------------------\n");
-    Node *current = l->head;
-    int no = 1;
-    while (current != NULL) {
-        printf("%-4d %-15s %-10s %-20s %-12s %-10s\n",
-               no++,
-               current->data.nama,
-               current->data.resi,
-               current->data.alamat,
-               current->data.estimasi,
-               current->status);
-        current = current->next;
-    }
-    printf("-----------------------------------------------------------------------\n");
-    printf("Total paket: %d\n", l->size);
 }
 
 void tambah(Queue *q, LinkedList *l) {
@@ -118,7 +120,9 @@ void tambah(Queue *q, LinkedList *l) {
         printf("Antrean Penuh\n");
         return;
     }
-    if (q->front == -1) q->front = 0;
+    if (q->front == -1) {
+        q->front = 0;
+    }
     q->rear++;
     printf("Masukan nama penerima  : ");
     scanf(" %[^\n]", q->data[q->rear].nama);
