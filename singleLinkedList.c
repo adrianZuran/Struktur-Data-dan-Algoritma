@@ -5,13 +5,12 @@
 #define MAX_NAMA 30
 #define MAX_RESI 10
 #define MAX_ALAMAT 50
-#define MAX_ESTIMASI 20
 
 typedef struct {
     char nama[MAX_NAMA];
     char resi[MAX_RESI];
     char alamat[MAX_ALAMAT];
-    char estimasi[MAX_ESTIMASI];
+    int estimasi;            
 } Paket;
 
 typedef struct Node {
@@ -25,16 +24,11 @@ typedef struct {
     int size;
 } LinkedList;
 
-void initList(LinkedList *l) {
-    l->head = NULL;
-    l->size = 0;
-}
-
-void tambahPaket(LinkedList *l) {
+Node *buatNode() {
     Node *baru = (Node *) malloc(sizeof(Node));
     if (baru == NULL) {
         printf("Gagal mengalokasi memori!\n");
-        return;
+        return NULL;
     }
 
     printf("Masukan nama penerima  : ");
@@ -44,10 +38,32 @@ void tambahPaket(LinkedList *l) {
     printf("Masukan alamat         : ");
     scanf(" %[^\n]", baru->data.alamat);
     printf("Masukan estimasi tiba  : ");
-    scanf(" %[^\n]", baru->data.estimasi);
+    scanf("%d", &baru->data.estimasi);   
+    while (getchar() != '\n');          
 
     strcpy(baru->status, "Mengantri");
     baru->next = NULL;
+    return baru;
+}
+
+void initList(LinkedList *l) {
+    l->head = NULL;
+    l->size = 0;
+}
+
+void sisipAwal(LinkedList *l) {
+    Node *baru = buatNode();
+    if (baru == NULL) return;
+
+    baru->next = l->head;
+    l->head = baru;
+    l->size++;
+    printf("PAKET BERHASIL DISISIP DI AWAL\n");
+}
+
+void sisipAkhir(LinkedList *l) {
+    Node *baru = buatNode();
+    if (baru == NULL) return;
 
     if (l->head == NULL) {
         l->head = baru;
@@ -58,9 +74,53 @@ void tambahPaket(LinkedList *l) {
         }
         temp->next = baru;
     }
-
     l->size++;
-    printf("PAKET BERHASIL DITAMBAHKAN\n");
+    printf("PAKET BERHASIL DISISIP DI AKHIR\n");
+}
+
+void hapusAwal(LinkedList *l) {
+    if (l->head == NULL) {
+        printf("Tidak ada paket!\n");
+        return;
+    }
+
+    Node *temp = l->head;
+    printf("PAKET DIHAPUS: %s (Resi: %s)\n",
+           temp->data.nama, temp->data.resi);
+
+    l->head = temp->next;
+    free(temp);
+    l->size--;
+}
+
+void hapusAkhir(LinkedList *l) {
+    if (l->head == NULL) {
+        printf("Tidak ada paket!\n");
+        return;
+    }
+
+    if (l->head->next == NULL) {
+        printf("PAKET DIHAPUS: %s (Resi: %s)\n",
+               l->head->data.nama, l->head->data.resi);
+        free(l->head);
+        l->head = NULL;
+        l->size--;
+        return;
+    }
+
+    Node *prev = NULL;
+    Node *current = l->head;
+    while (current->next != NULL) {
+        prev = current;
+        current = current->next;
+    }
+
+    printf("PAKET DIHAPUS: %s (Resi: %s)\n",
+           current->data.nama, current->data.resi);
+
+    prev->next = NULL;
+    free(current);
+    l->size--;
 }
 
 void kirimPaket(LinkedList *l) {
@@ -93,18 +153,21 @@ void tampilPaket(LinkedList *l) {
     Node *current = l->head;
     int no = 1;
 
-    printf("\n===== DAFTAR PAKET =====\n");
+    printf("\n===== DAFTAR PAKET (Total: %d) =====\n", l->size);
     printf("%-4s %-15s %-10s %-20s %-12s %-10s\n",
            "No", "Nama", "Resi", "Alamat", "Estimasi", "Status");
-    printf("------------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------------\n");
 
     while (current != NULL) {
+        char estimasiStr[20];
+        sprintf(estimasiStr, "%d hari", current->data.estimasi);
+
         printf("%-4d %-15s %-10s %-20s %-12s %-10s\n",
                no++,
                current->data.nama,
                current->data.resi,
                current->data.alamat,
-               current->data.estimasi,
+               estimasiStr,             
                current->status);
         current = current->next;
     }
@@ -129,26 +192,35 @@ int main() {
 
     do {
         printf("\n=== SISTEM PENGIRIMAN (SINGLE LINKED LIST) ===\n");
-        printf("1. Tambah Paket\n");
-        printf("2. Kirim Paket\n");
-        printf("3. Tampilkan Paket\n");
-        printf("4. Keluar\n");
+        printf("--- Tambah ---\n");
+        printf("1. Sisip Awal\n");
+        printf("2. Sisip Akhir\n");
+        printf("--- Hapus ---\n");
+        printf("3. Hapus Awal\n");
+        printf("4. Hapus Akhir\n");
+        printf("--- Lainnya ---\n");
+        printf("5. Kirim Paket\n");
+        printf("6. Tampilkan Paket\n");
+        printf("7. Keluar\n");
         printf("Pilih: ");
 
         if (scanf("%d", &pilih) != 1) {
-            pilih = -1; 
+            pilih = -1;
         }
-        while (getchar() != '\n'); // Bersihkan sisa buffer
+        while (getchar() != '\n');
 
         switch (pilih) {
-            case 1: tambahPaket(&list); break;
-            case 2: kirimPaket(&list); break;
-            case 3: tampilPaket(&list); break;
-            case 4: printf("Keluar...\n"); break;
+            case 1: sisipAwal(&list);   break;
+            case 2: sisipAkhir(&list);  break;
+            case 3: hapusAwal(&list);   break;
+            case 4: hapusAkhir(&list);  break;
+            case 5: kirimPaket(&list);  break;
+            case 6: tampilPaket(&list); break;
+            case 7: printf("Keluar...\n"); break;
             default: printf("Pilihan tidak valid!\n");
         }
 
-    } while (pilih != 4);
+    } while (pilih != 7);
 
     hapusSemua(&list);
     return 0;
