@@ -152,8 +152,28 @@ void tampilPaket(LinkedList *l) {
 
     Node *current = l->head;
     int no = 1;
+    int jumlahMengantri = 0;
+    int jumlahTerkirim = 0;
 
-    printf("\n===== DAFTAR PAKET (Total: %d) =====\n", l->size);
+    // Hitung jumlah paket berdasarkan status
+    Node *temp = l->head;
+    while (temp != NULL) {
+        if (strcmp(temp->status, "Mengantri") == 0) {
+            jumlahMengantri++;
+        } else if (strcmp(temp->status, "Terkirim") == 0) {
+            jumlahTerkirim++;
+        }
+        temp = temp->next;
+    }
+
+    // Header dengan informasi statistik
+    printf("\n========== DAFTAR PAKET ==========\n");
+    printf("Jumlah Paket Keseluruhan : %d\n", l->size);
+    printf("Paket Mengantri          : %d\n", jumlahMengantri);
+    printf("Paket Terkirim           : %d\n", jumlahTerkirim);
+    printf("===================================\n\n");
+
+    // Tabel paket
     printf("%-4s %-15s %-10s %-20s %-12s %-10s\n",
            "No", "Nama", "Resi", "Alamat", "Estimasi", "Status");
     printf("--------------------------------------------------------------------\n");
@@ -171,10 +191,12 @@ void tampilPaket(LinkedList *l) {
                current->status);
         current = current->next;
     }
+    printf("--------------------------------------------------------------------\n");
 }
 
 void hapusSemua(LinkedList *l) {
     Node *current = l->head;
+
     while (current != NULL) {
         Node *temp = current;
         current = current->next;
@@ -195,10 +217,8 @@ int main() {
         printf("--- Tambah ---\n");
         printf("1. Sisip Awal\n");
         printf("2. Sisip Akhir\n");
-        printf("--- Hapus ---\n");
         printf("3. Hapus Awal\n");
         printf("4. Hapus Akhir\n");
-        printf("--- Lainnya ---\n");
         printf("5. Kirim Paket\n");
         printf("6. Tampilkan Paket\n");
         printf("7. Keluar\n");
@@ -218,6 +238,7 @@ int main() {
             case 6: tampilPaket(&list); break;
             case 7: printf("Keluar...\n"); break;
             default: printf("Pilihan tidak valid!\n");
+
         }
 
     } while (pilih != 7);
