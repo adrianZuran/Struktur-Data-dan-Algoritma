@@ -17,26 +17,26 @@ typedef struct
     char nama[MAX_NAMA];
     char resi[MAX_RESI];
     char alamat[MAX_ALAMAT];
-    char estimasi[MAX_ESTIMASI];
+    int estimasi;
     char status[MAX_STATUS];
 } Paket;
 
 Paket dummy[] = {
-    {"Budi Santoso", "RS001", "Jl. Merpati No.1, Surabaya", "2024-12-20", "Dikirim"},
-    {"Ani Rahayu", "RS002", "Jl. Kenari No.5, Bandung", "2024-12-18", "Dalam Proses"},
-    {"Zara Dewi", "RS003", "Jl. Flamboyan No.3, Jakarta", "2024-12-22", "Terkirim"},
-    {"Candra Putra", "RS004", "Jl. Melati No.7, Medan", "2024-12-19", "Dikirim"},
-    {"Mega Wulandari", "RS005", "Jl. Mawar No.2, Yogyakarta", "2024-12-17", "Pending"},
-    {"Hendra Kusuma", "RS006", "Jl. Anggrek No.9, Semarang", "2024-12-25", "Dalam Proses"},
-    {"Fitri Handayani", "RS007", "Jl. Dahlia No.4, Malang", "2024-12-15", "Terkirim"},
-    {"Rizky Pratama", "RS008", "Jl. Teratai No.6, Makassar", "2024-12-23", "Dikirim"},
-    {"Siti Aisyah", "RS009", "Jl. Cempaka No.11, Palembang", "2024-12-16", "Pending"},
-    {"Doni Firmansyah", "RS010", "Jl. Bougenville No.8, Depok", "2024-12-21", "Dalam Proses"},
-    {"Laras Setiawati", "RS011", "Jl. Kamboja No.13, Bekasi", "2024-12-14", "Terkirim"},
-    {"Agus Wijaya", "RS012", "Jl. Tulip No.3, Tangerang", "2024-12-26", "Dikirim"},
-    {"Nadia Permata", "RS013", "Jl. Seruni No.17, Solo", "2024-12-13", "Pending"},
-    {"Fahrul Hidayat", "RS014", "Jl. Edelweis No.5, Balikpapan", "2024-12-24", "Dalam Proses"},
-    {"Yuni Astuti", "RS015", "Jl. Sakura No.20, Denpasar", "2024-12-12", "Terkirim"},
+    {"Budi Santoso", "RS001", "Jl. Merpati No.1, Surabaya", 2, "Dikirim"},
+    {"Ani Rahayu", "RS002", "Jl. Kenari No.5, Bandung", 4, "Dalam Proses"},
+    {"Zara Dewi", "RS003", "Jl. Flamboyan No.3, Jakarta", 1, "Terkirim"},
+    {"Candra Putra", "RS004", "Jl. Melati No.7, Medan", 3, "Dikirim"},
+    {"Mega Wulandari", "RS005", "Jl. Mawar No.2, Yogyakarta", 5, "Pending"},
+    {"Hendra Kusuma", "RS006", "Jl. Anggrek No.9, Semarang", 6, "Dalam Proses"},
+    {"Fitri Handayani", "RS007", "Jl. Dahlia No.4, Malang", 1, "Terkirim"},
+    {"Rizky Pratama", "RS008", "Jl. Teratai No.6, Makassar", 4, "Dikirim"},
+    {"Siti Aisyah", "RS009", "Jl. Cempaka No.11, Palembang", 5, "Pending"},
+    {"Doni Firmansyah", "RS010", "Jl. Bougenville No.8, Depok", 3, "Dalam Proses"},
+    {"Laras Setiawati", "RS011", "Jl. Kamboja No.13, Bekasi", 1, "Terkirim"},
+    {"Agus Wijaya", "RS012", "Jl. Tulip No.3, Tangerang", 2, "Dikirim"},
+    {"Nadia Permata", "RS013", "Jl. Seruni No.17, Solo", 7, "Pending"},
+    {"Fahrul Hidayat", "RS014", "Jl. Edelweis No.5, Balikpapan", 6, "Dalam Proses"},
+    {"Yuni Astuti", "RS015", "Jl. Sakura No.20, Denpasar", 2, "Terkirim"}
 };
 
 int totalData = 15;
@@ -50,7 +50,7 @@ void tampilkanData(Paket data[], int n) {
     printf("================================================================================\n");
     
     for (int i = 0; i < n; i++) {
-        printf("%-4d %-20s %-10s %-35s %-12s %-15s\n",
+        printf("%-4d %-20s %-10s %-35s %-12d %-15s\n",
                i + 1,
                data[i].nama,
                data[i].resi,
@@ -83,7 +83,7 @@ void merge(Paket arr[], int left, int mid, int right, int sortBy) {
         if (sortBy == SORT_NAMA) {
             compare = strcmp(L[i].nama, R[j].nama);
         } else {
-            compare = strcmp(L[i].estimasi, R[j].estimasi);
+            compare = L[i].estimasi - R[j].estimasi;
         }
         
         if (compare <= 0) {
@@ -93,7 +93,7 @@ void merge(Paket arr[], int left, int mid, int right, int sortBy) {
             arr[k] = R[j];
             j++;
         }
-        k++;
+        k++;    
     }
     
     while (i < n1) {

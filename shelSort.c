@@ -1,16 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 
-typedef struct {
-    int hari, bulan, tahun;
-} Tanggal;
+#define MAX_NAMA 30
+#define MAX_RESI 10
+#define MAX_ALAMAT 50
+#define MAX_ESTIMASI 20
+#define MAX_STATUS 15
+#define MAX_DATA 100
 
 typedef struct {
-    char nama[50];
-    char resi[20];
-    char alamat[100];
-    char status[30];
-    Tanggal estimasi;
+    char nama[MAX_NAMA];
+    char resi[MAX_RESI];
+    char alamat[MAX_ALAMAT];
+    int estimasi;
+    char status[MAX_STATUS];
 } Paket;
 
 typedef Paket typeData;
@@ -37,7 +40,7 @@ void shellSort_Swap(typeData arr[], int n, int menu) {
                 if(menu == 1){
 
                     kondisi =
-                    arr[j + gap].estimasi.hari >= arr[j].estimasi.hari;
+                    arr[j + gap].estimasi >= arr[j].estimasi;
 
                 }
                 // Sorting berdasarkan nama
@@ -77,21 +80,20 @@ int menu(){
 // Print Data Paket
 void printArrayPaket(typeData arr[], int size) {
 
-    printf("\n============================================================================================\n");
-    printf("NAMA\t\tRESI\tALAMAT\t\t\t\tESTIMASI\tSTATUS\n");
-    printf("============================================================================================\n");
+    printf("\n========================================================================================================\n");
+    printf("%-3s | %-20s | %-7s | %-32s | %-12s | %-15s\n", 
+           "NO", "Nama", "Resi", "Alamat", "Estimasi", "Status");
+    printf("========================================================================================================\n");
 
     for (int i = 0; i < size; i++) {
 
-        printf("%-15s %-8s %-30s %02d-%02d-%d\t%-15s\n",
-
-        arr[i].nama,
-        arr[i].resi,
-        arr[i].alamat,
-        arr[i].estimasi.hari,
-        arr[i].estimasi.bulan,
-        arr[i].estimasi.tahun,
-        arr[i].status);
+        printf("%-3d | %-20s | %-7s | %-32s | %-12d | %-15s\n",
+               i + 1,
+               arr[i].nama,
+               arr[i].resi,
+               arr[i].alamat,
+               arr[i].estimasi,
+               arr[i].status);
     }
 
     printf("\n");
@@ -100,46 +102,21 @@ void printArrayPaket(typeData arr[], int size) {
 int main() {
 
     typeData data[] = {
-
-        {"Budi Santoso", "RS001",
-        "Surabaya", "Dikirim",
-        20, 12, 2024},
-
-        {"Ani Rahayu", "RS002",
-        "Bandung", "Dalam Proses",
-        18, 12, 2024},
-
-        {"Zara Dewi", "RS003",
-        "Jakarta", "Terkirim",
-        22, 12, 2024},
-
-        {"Candra Putra", "RS004",
-        "Medan", "Dikirim",
-        19, 12, 2024},
-
-        {"Mega Wulandari", "RS005",
-        "Yogyakarta", "Pending",
-        17, 12, 2024},
-
-        {"Hendra Kusuma", "RS006",
-        "Semarang", "Dalam Proses",
-        25, 12, 2024},
-
-        {"Fitri Handayani", "RS007",
-        "Malang", "Terkirim",
-        15, 12, 2024},
-
-        {"Rizky Pratama", "RS008",
-        "Makassar", "Dikirim",
-        23, 12, 2024},
-
-        {"Siti Aisyah", "RS009",
-        "Palembang", "Pending",
-        16, 12, 2024},
-
-        {"Doni Firmansyah", "RS010",
-        "Depok", "Dalam Proses",
-        21, 12, 2024}
+        {"Budi Santoso", "RS001", "Jl. Merpati No.1, Surabaya", 2, "Dikirim"},
+        {"Ani Rahayu", "RS002", "Jl. Kenari No.5, Bandung", 4, "Dalam Proses"},
+        {"Zara Dewi", "RS003", "Jl. Flamboyan No.3, Jakarta", 1, "Terkirim"},
+        {"Candra Putra", "RS004", "Jl. Melati No.7, Medan", 3, "Dikirim"},
+        {"Mega Wulandari", "RS005", "Jl. Mawar No.2, Yogyakarta", 5, "Pending"},
+        {"Hendra Kusuma", "RS006", "Jl. Anggrek No.9, Semarang", 6, "Dalam Proses"},
+        {"Fitri Handayani", "RS007", "Jl. Dahlia No.4, Malang", 1, "Terkirim"},
+        {"Rizky Pratama", "RS008", "Jl. Teratai No.6, Makassar", 4, "Dikirim"},
+        {"Siti Aisyah", "RS009", "Jl. Cempaka No.11, Palembang", 5, "Pending"},
+        {"Doni Firmansyah", "RS010", "Jl. Bougenville No.8, Depok", 3, "Dalam Proses"},
+        {"Laras Setiawati", "RS011", "Jl. Kamboja No.13, Bekasi", 1, "Terkirim"},
+        {"Agus Wijaya", "RS012", "Jl. Tulip No.3, Tangerang", 2, "Dikirim"},
+        {"Nadia Permata", "RS013", "Jl. Seruni No.17, Solo", 7, "Pending"},
+        {"Fahrul Hidayat", "RS014", "Jl. Edelweis No.5, Balikpapan", 6, "Dalam Proses"},
+        {"Yuni Astuti", "RS015", "Jl. Sakura No.20, Denpasar", 2, "Terkirim"}
     };
 
     int n = sizeof(data) / sizeof(data[0]);
