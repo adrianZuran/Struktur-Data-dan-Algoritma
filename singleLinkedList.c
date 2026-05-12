@@ -1,248 +1,198 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-#define MAX_NAMA 30
-#define MAX_RESI 10
-#define MAX_ALAMAT 50
+#define MAX_NAMA 50
+#define MAX_RESI 20
+#define MAX_ALAMAT 100
+#define MAX_SIZE 6
 
 typedef struct {
     char nama[MAX_NAMA];
     char resi[MAX_RESI];
     char alamat[MAX_ALAMAT];
-    int estimasi;            
+    int estimasi;
 } Paket;
 
-typedef struct Node {
-    Paket data;
-    char status[15];
-    struct Node *next;
-} Node;
+/* ================= DATA DUMMY ================= */
 
-typedef struct {
-    Node *head;
-    int size;
-} LinkedList;
+Paket paket[MAX_SIZE] = {
+    {"Budi",  "RESI006", "Surabaya", 3},
+    {"Andi",  "RESI002", "Sidoarjo", 1},
+    {"Caca",  "RESI004", "Malang", 5},
+    {"Doni",  "RESI001", "Gresik", 2},
+    {"Eka",   "RESI005", "Mojokerto", 4},
+    {"Fajar", "RESI003", "Lamongan", 2}
+};
 
-Node *buatNode() {
-    Node *baru = (Node *) malloc(sizeof(Node));
-    if (baru == NULL) {
-        printf("Gagal mengalokasi memori!\n");
-        return NULL;
+/* ================= TAMPIL DATA ================= */
+
+void tampil()
+{
+    printf("\n====================================================\n");
+    printf("Nama\tResi\t\tAlamat\t\tEstimasi\n");
+    printf("====================================================\n");
+
+    for (int i = 0; i < MAX_SIZE; i++)
+    {
+        printf("%s\t%s\t%s\t\t%d Hari\n",
+               paket[i].nama,
+               paket[i].resi,
+               paket[i].alamat,
+               paket[i].estimasi);
     }
-
-    printf("Masukan nama penerima  : ");
-    scanf(" %[^\n]", baru->data.nama);
-    printf("Masukan resi paket     : ");
-    scanf("%s", baru->data.resi);
-    printf("Masukan alamat         : ");
-    scanf(" %[^\n]", baru->data.alamat);
-    printf("Masukan estimasi tiba  : ");
-    scanf("%d", &baru->data.estimasi);   
-    while (getchar() != '\n');          
-
-    strcpy(baru->status, "Mengantri");
-    baru->next = NULL;
-    return baru;
 }
 
-void initList(LinkedList *l) {
-    l->head = NULL;
-    l->size = 0;
+/* ================= SWAP ================= */
+
+void swap(Paket *a, Paket *b)
+{
+    Paket temp = *a;
+    *a = *b;
+    *b = temp;
 }
 
-void sisipAwal(LinkedList *l) {
-    Node *baru = buatNode();
-    if (baru == NULL) return;
+/* ================= QUICK SORT ================= */
 
-    baru->next = l->head;
-    l->head = baru;
-    l->size++;
-    printf("PAKET BERHASIL DISISIP DI AWAL\n");
-}
+int partition(int low, int high)
+{
+    char pivot[MAX_NAMA];
+    strcpy(pivot, paket[high].nama);
 
-void sisipAkhir(LinkedList *l) {
-    Node *baru = buatNode();
-    if (baru == NULL) return;
+    int i = low - 1;
 
-    if (l->head == NULL) {
-        l->head = baru;
-    } else {
-        Node *temp = l->head;
-        while (temp->next != NULL) {
-            temp = temp->next;
+    for (int j = low; j < high; j++)
+    {
+        if (strcmp(paket[j].nama, pivot) < 0)
+        {
+            i++;
+            swap(&paket[i], &paket[j]);
         }
-        temp->next = baru;
     }
-    l->size++;
-    printf("PAKET BERHASIL DISISIP DI AKHIR\n");
+
+    swap(&paket[i + 1], &paket[high]);
+
+    return i + 1;
 }
 
-void hapusAwal(LinkedList *l) {
-    if (l->head == NULL) {
-        printf("Tidak ada paket!\n");
-        return;
+void quickSort(int low, int high)
+{
+    if (low < high)
+    {
+        int pi = partition(low, high);
+
+        quickSort(low, pi - 1);
+        quickSort(pi + 1, high);
     }
-
-    Node *temp = l->head;
-    printf("PAKET DIHAPUS: %s (Resi: %s)\n",
-           temp->data.nama, temp->data.resi);
-
-    l->head = temp->next;
-    free(temp);
-    l->size--;
 }
 
-void hapusAkhir(LinkedList *l) {
-    if (l->head == NULL) {
-        printf("Tidak ada paket!\n");
-        return;
-    }
+/* ================= SHELL SORT ================= */
 
-    if (l->head->next == NULL) {
-        printf("PAKET DIHAPUS: %s (Resi: %s)\n",
-               l->head->data.nama, l->head->data.resi);
-        free(l->head);
-        l->head = NULL;
-        l->size--;
-        return;
-    }
+void shellSort()
+{
+    for (int gap = MAX_SIZE / 2; gap > 0; gap /= 2)
+    {
+        for (int i = gap; i < MAX_SIZE; i++)
+        {
+            Paket temp = paket[i];
 
-    Node *prev = NULL;
-    Node *current = l->head;
-    while (current->next != NULL) {
-        prev = current;
-        current = current->next;
-    }
+            int j;
 
-    printf("PAKET DIHAPUS: %s (Resi: %s)\n",
-           current->data.nama, current->data.resi);
+            for (j = i;
+                 j >= gap &&
+                 strcmp(paket[j - gap].nama, temp.nama) > 0;
+                 j -= gap)
+            {
+                paket[j] = paket[j - gap];
+            }
 
-    prev->next = NULL;
-    free(current);
-    l->size--;
-}
-
-void kirimPaket(LinkedList *l) {
-    if (l->head == NULL) {
-        printf("Tidak ada paket!\n");
-        return;
-    }
-
-    Node *temp = l->head;
-    while (temp != NULL && strcmp(temp->status, "Mengantri") != 0) {
-        temp = temp->next;
-    }
-
-    if (temp == NULL) {
-        printf("Semua paket sudah terkirim!\n");
-        return;
-    }
-
-    strcpy(temp->status, "Terkirim");
-    printf("PAKET DIKIRIM: %s (Resi: %s)\n",
-           temp->data.nama, temp->data.resi);
-}
-
-void tampilPaket(LinkedList *l) {
-    if (l->head == NULL) {
-        printf("Belum ada paket.\n");
-        return;
-    }
-
-    Node *current = l->head;
-    int no = 1;
-    int jumlahMengantri = 0;
-    int jumlahTerkirim = 0;
-
-    // Hitung jumlah paket berdasarkan status
-    Node *temp = l->head;
-    while (temp != NULL) {
-        if (strcmp(temp->status, "Mengantri") == 0) {
-            jumlahMengantri++;
-        } else if (strcmp(temp->status, "Terkirim") == 0) {
-            jumlahTerkirim++;
+            paket[j] = temp;
         }
-        temp = temp->next;
     }
-
-    // Header dengan informasi statistik
-    printf("\n========== DAFTAR PAKET ==========\n");
-    printf("Jumlah Paket Keseluruhan : %d\n", l->size);
-    printf("Paket Mengantri          : %d\n", jumlahMengantri);
-    printf("Paket Terkirim           : %d\n", jumlahTerkirim);
-    printf("===================================\n\n");
-
-    // Tabel paket
-    printf("%-4s %-15s %-10s %-20s %-12s %-10s\n",
-           "No", "Nama", "Resi", "Alamat", "Estimasi", "Status");
-    printf("--------------------------------------------------------------------\n");
-
-    while (current != NULL) {
-        char estimasiStr[20];
-        sprintf(estimasiStr, "%d hari", current->data.estimasi);
-
-        printf("%-4d %-15s %-10s %-20s %-12s %-10s\n",
-               no++,
-               current->data.nama,
-               current->data.resi,
-               current->data.alamat,
-               estimasiStr,             
-               current->status);
-        current = current->next;
-    }
-    printf("--------------------------------------------------------------------\n");
 }
 
-void hapusSemua(LinkedList *l) {
-    Node *current = l->head;
+/* ================= MERGE SORT ================= */
 
-    while (current != NULL) {
-        Node *temp = current;
-        current = current->next;
-        free(temp);
-    }
-    l->head = NULL;
-    l->size = 0;
-}
+void merge(int left, int mid, int right)
+{
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
 
-int main() {
-    LinkedList list;
-    initList(&list);
+    Paket L[n1], R[n2];
 
-    int pilih;
+    for (int i = 0; i < n1; i++)
+        L[i] = paket[left + i];
 
-    do {
-        printf("\n=== SISTEM PENGIRIMAN (SINGLE LINKED LIST) ===\n");
-        printf("--- Tambah ---\n");
-        printf("1. Sisip Awal\n");
-        printf("2. Sisip Akhir\n");
-        printf("3. Hapus Awal\n");
-        printf("4. Hapus Akhir\n");
-        printf("5. Kirim Paket\n");
-        printf("6. Tampilkan Paket\n");
-        printf("7. Keluar\n");
-        printf("Pilih: ");
+    for (int j = 0; j < n2; j++)
+        R[j] = paket[mid + 1 + j];
 
-        if (scanf("%d", &pilih) != 1) {
-            pilih = -1;
+    int i = 0;
+    int j = 0;
+    int k = left;
+
+    while (i < n1 && j < n2)
+    {
+        if (strcmp(L[i].nama, R[j].nama) < 0)
+        {
+            paket[k] = L[i];
+            i++;
         }
-        while (getchar() != '\n');
-
-        switch (pilih) {
-            case 1: sisipAwal(&list);   break;
-            case 2: sisipAkhir(&list);  break;
-            case 3: hapusAwal(&list);   break;
-            case 4: hapusAkhir(&list);  break;
-            case 5: kirimPaket(&list);  break;
-            case 6: tampilPaket(&list); break;
-            case 7: printf("Keluar...\n"); break;
-            default: printf("Pilihan tidak valid!\n");
-
+        else
+        {
+            paket[k] = R[j];
+            j++;
         }
 
-    } while (pilih != 7);
+        k++;
+    }
 
-    hapusSemua(&list);
+    while (i < n1)
+    {
+        paket[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2)
+    {
+        paket[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(int left, int right)
+{
+    if (left < right)
+    {
+        int mid = (left + right) / 2;
+
+        mergeSort(left, mid);
+        mergeSort(mid + 1, right);
+
+        merge(left, mid, right);
+    }
+}
+
+/* ================= MAIN ================= */
+
+int main()
+{
+    printf("DATA AWAL:\n");
+    tampil();
+
+    /* PILIH SALAH SATU */
+
+    // QUICK SORT
+    quickSort(0, MAX_SIZE - 1);
+
+    // SHELL SORT
+    // shellSort();
+
+    // MERGE SORT
+    // mergeSort(0, MAX_SIZE - 1);
+
+    printf("\nSETELAH SORTING:\n");
+    tampil();
+
     return 0;
 }

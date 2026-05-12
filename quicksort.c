@@ -1,60 +1,89 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-int data[] = {57,17,14,84,21,18,48,32,22,23};
-int n = sizeof(data) / sizeof(data[0]);
+#define MAX_NAMA 30
+#define MAX_RESI 10
+#define MAX_ALAMAT 50
+#define MAX_ESTIMASI 20
+#define MAX_STATUS 15
+#define MAX_DATA 100
 
-// Fungsi untuk menukar dua elemen
-void swap(int *a, int *b) {
-    int t = *a;
+#define SORT_NAMA 0
+#define SORT_ESTIMASI 1
+
+typedef struct
+{
+    char nama[MAX_NAMA];
+    char resi[MAX_RESI];
+    char alamat[MAX_ALAMAT];
+    char estimasi[MAX_ESTIMASI];
+    char status[MAX_STATUS];
+} Paket;
+
+Paket dummy[] = {
+    {"Budi Santoso", "RS001", "Jl. Merpati No.1, Surabaya", "2024-12-20", "Dikirim"},
+    {"Ani Rahayu", "RS002", "Jl. Kenari No.5, Bandung", "2024-12-18", "Dalam Proses"},
+    {"Zara Dewi", "RS003", "Jl. Flamboyan No.3, Jakarta", "2024-12-22", "Terkirim"},
+    {"Candra Putra", "RS004", "Jl. Melati No.7, Medan", "2024-12-19", "Dikirim"},
+    {"Mega Wulandari", "RS005", "Jl. Mawar No.2, Yogyakarta", "2024-12-17", "Pending"},
+    {"Hendra Kusuma", "RS006", "Jl. Anggrek No.9, Semarang", "2024-12-25", "Dalam Proses"},
+    {"Fitri Handayani", "RS007", "Jl. Dahlia No.4, Malang", "2024-12-15", "Terkirim"},
+    {"Rizky Pratama", "RS008", "Jl. Teratai No.6, Makassar", "2024-12-23", "Dikirim"},
+    {"Siti Aisyah", "RS009", "Jl. Cempaka No.11, Palembang", "2024-12-16", "Pending"},
+    {"Doni Firmansyah", "RS010", "Jl. Bougenville No.8, Depok", "2024-12-21", "Dalam Proses"},
+    {"Laras Setiawati", "RS011", "Jl. Kamboja No.13, Bekasi", "2024-12-14", "Terkirim"},
+    {"Agus Wijaya", "RS012", "Jl. Tulip No.3, Tangerang", "2024-12-26", "Dikirim"},
+    {"Nadia Permata", "RS013", "Jl. Seruni No.17, Solo", "2024-12-13", "Pending"},
+    {"Fahrul Hidayat", "RS014", "Jl. Edelweis No.5, Balikpapan", "2024-12-24", "Dalam Proses"},
+    {"Yuni Astuti", "RS015", "Jl. Sakura No.20, Denpasar", "2024-12-12", "Terkirim"},
+};
+int n = sizeof(dummy) / sizeof(dummy[0]);
+
+void cetakdata(Paket arr[], int n)
+{
+    printf("%-3s | %-20s | %-7s | %-32s | %-12s | %-15s\n", 
+           "NO", "Nama", "Resi", "Alamat", "Estimasi", "Status");
+    printf("--------------------------------------------------------------------------------------------------------\n");
+    for (int i = 0; i < n; i++)
+    {
+        printf("%-3d | %-20s | %-7s | %-32s | %-12s | %-15s\n",
+               i + 1,
+               arr[i].nama,
+               arr[i].resi,
+               arr[i].alamat,
+               arr[i].estimasi,
+               arr[i].status
+            );
+    }
+}
+
+void swap(Paket *a, Paket *b)
+{
+    Paket t = *a;
     *a = *b;
     *b = t;
 }
 
-// Fungsi untuk mencetak array
-void printArray(int arr[], int size) {
-    for (int i = 0; i < size; i++)
-        printf("%d ", arr[i]);
-    printf("\n");
-}
+int partition(Paket arr[], int low, int high, int key)
+{
+    Paket pivot = arr[high];
+    int i = (low - 1);
 
-void printArray2(int arr[], int size, int partition) {
-    for (int i = 0; i < size; i++){
-        if(i == partition){
-            printf("-%d- ", arr[i]);
-        }else{
-            printf("%d ", arr[i]);
+    for (int j = low; j <= high - 1; j++)
+    {
+        int far;
+        if (key == SORT_NAMA)
+        {
+            far = strcmp(arr[j].nama, pivot.nama);
         }
-    }
-    printf("\n");
-}
-
-void printSubArray(int arr[], int low, int high, int partition) {
-    printf("Print Sub Array(%d, %d)\n", low, high);
-    for (int i = low; i <= high; i++){
-        if(i == partition){
-            printf("-%d- ", arr[i]);
-        }else{
-            printf("%d ", arr[i]);
+        else
+        {
+            far = strcmp(arr[j].estimasi, pivot.estimasi);
         }
-        
-    }
-        
-    printf("\n");
-}
-
-// Fungsi partisi: mengambil elemen terakhir sebagai pivot, 
-// menempatkan pivot di posisi yang benar, dan memindahkan
-// elemen lebih kecil ke kiri dan lebih besar ke kanan
-int partition(int arr[], int low, int high) {
-    int pivot = arr[high]; // pivot untuk nrp 21-30
-    printf("Pivot = arr[%d]\n", high);
-    printf("Pivot = %d\n", pivot);
-    int i = (low - 1); // Indeks elemen lebih kecil
-
-    for (int j = low; j <= high - 1; j++) {
-        // Jika elemen saat ini lebih kecil dari pivot
-        if (arr[j] < pivot) {
-            i++; // tingkatkan indeks elemen lebih kecil
+        if (far <= 0)
+        {
+            i++;
             swap(&arr[i], &arr[j]);
         }
     }
@@ -62,32 +91,27 @@ int partition(int arr[], int low, int high) {
     return (i + 1);
 }
 
-// Fungsi utama QuickSort
-void quickSort(int arr[], int low, int high) {
-    printf("\n-----quickSort(arr, %d, %d)\n", low, high);
-    if (low < high) {
-        // pi adalah indeks partisi, arr[pi] sekarang di posisi yang benar
-        int pi = partition(arr, low, high);
+void quickSort(Paket arr[], int low, int high, int key)
+{
+    printf("\nquickSort(arr, %d, %d)\n", low, high);
+    if (low < high)
+    {
+        int pi = partition(arr, low, high, key);
         printf("partition = %d\n", pi);
-        printSubArray(arr, low, high, pi);
-        printArray2(arr, n, pi );
-        printf("Masuk Stack:\n");
-        printf("quickSort (arr, %d, %d)\n", low, pi -1);
-        printf("quickSort (arr, %d, %d)\n", pi + 1, high);
-
-        // Urutkan elemen secara terpisah sebelum dan sesudah partisi
-        quickSort(arr, low, pi - 1);
-        quickSort(arr, pi + 1, high);
+        quickSort(arr, low, pi - 1, key);
+        quickSort(arr, pi + 1, high, key);
     }
 }
 
-int main() {
-    printf("Array awal: \n");
-    printArray(data, n);
-    
-    quickSort(data, 0, n - 1);
-    
-    printf("Array terurut: \n");
-    printArray(data, n);
+int main()
+{
+    cetakdata(dummy, n);
+
+    quickSort(dummy, 0, n - 1, SORT_NAMA);
+    cetakdata(dummy, n);
+
+    quickSort(dummy, 0, n - 1, SORT_ESTIMASI);
+    cetakdata(dummy, n);
+
     return 0;
-}
+};
