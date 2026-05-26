@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-int arr[] = {20, 39, 9, 49, 97, 82, 27, 59, 80, 29};
+int arr[] = {57, 17, 14, 84, 21, 18, 48, 32, 22, 23};
 int arr_size = sizeof(arr) / sizeof(arr[0]);
 
 // Fungsi untuk mencetak array
@@ -11,14 +11,19 @@ void printArray(int A[], int size) {
 }
 
 // Fungsi untuk mencetak array
-void printSubArray(int A[], int size) {
-    for (int i = 0; i < size; i++)
+void printSubArray(int A[], int l, int m, int right) {
+    
+    for (int i = l; i < (right + 1); i++) {
+        if (i == (m + 1))   printf("| ");
         printf("%d ", A[i]);
+    }
     printf("\n");
 }
 
 // Fungsi untuk menggabungkan dua subarray L[] dan R[] menjadi arr[]
 void merge(int arr[], int l, int m, int r) {
+    // printf("\n----merge(arr, %d, %d, %d)\n", l, m, r);
+    // printSubArray(arr, l, m, r);  
     int i, j, k;
     int n1 = m - l + 1;
     int n2 = r - m;
@@ -63,13 +68,26 @@ void mergeSort(int arr[], int l, int r) {
     printf("\n----mergeSort(arr, %d,%d)\n", l, r);
     if (l < r) {
         int m = l + (r - l) / 2;
+        
+        
         printf("m = %d\n", m);
+
+        printf("stack : \n");
+        printf("mergeSort(arr, %d, %d) \n", l, m);
+        printf("mergeSort(arr, %d, %d) \n", m + 1, r);
+        printf("merge(arr, %d, %d, %d)\n",l,m,r);
+        
         // Mengurutkan bagian pertama dan kedua
+        
         mergeSort(arr, l, m);
         mergeSort(arr, m + 1, r);
-
+        printf("---merge(arr, %d, %d, %d)\n",l,m,r);
+        printf("sebelum merge : \n");
+        printSubArray(arr, l, m, r);
+        
         merge(arr, l, m, r);
-        printf("merge(arr, %d, %d, %d)\n",l,m,r);
+        printf("setelah merge : \n");
+        printSubArray(arr, l, m, r);
         printArray(arr,arr_size);
     }
 }
@@ -82,7 +100,7 @@ int main() {
     printArray(arr, arr_size);
 
     mergeSort(arr, 0, arr_size - 1);
-
+    
     printf("\nArray terurut: \n");
     printArray(arr, arr_size);
     return 0;
