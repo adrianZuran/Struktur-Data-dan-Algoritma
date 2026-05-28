@@ -176,10 +176,6 @@ void tambahPaket(struct Paket *paket[], int *jumlahPaket) {
     fgets(paket[i]->resi, sizeof(paket[i]->resi), stdin);
     hilangkanEnter(paket[i]->resi);
 
-    printf("Pengirim : ");
-    fgets(paket[i]->pengirim, sizeof(paket[i]->pengirim), stdin);
-    hilangkanEnter(paket[i]->pengirim);
-
     printf("Penerima : ");
     fgets(paket[i]->penerima, sizeof(paket[i]->penerima), stdin);
     hilangkanEnter(paket[i]->penerima);
@@ -256,7 +252,6 @@ void tambahPaket(struct Paket *paket[], int *jumlahPaket) {
         strftime(tgl[k], sizeof(tgl[k]), "%d %b", tm_curr);
     }
 
-    // AUTO GENERATE TRACKING berdasarkan BFS Path
     int trk = 0;
     strcpy(paket[i]->statusSekarang, "Terkirim");
 
@@ -280,7 +275,7 @@ void tambahPaket(struct Paket *paket[], int *jumlahPaket) {
     INIT_TRACKING(trk);
     strcpy(paket[i]->tracking[trk].tanggal, tgl[1]);
     strcpy(paket[i]->tracking[trk].deskripsi, "Kurir ditugaskan untuk menjemput pesanan.");
-    strcpy(paket[i]->tracking[trk].kurir, "Budi (Pickup)");
+    strcpy(paket[i]->tracking[trk].kurir, "Pak Budi (Pickup)");
     strcpy(paket[i]->tracking[trk].plat, "W 1122 AA");
     trk++;
 
@@ -360,13 +355,14 @@ void sortNama(struct Paket *paket[], int jumlahPaket) {
 
     struct Paket *temp;
 
-    for(int i = 0; i < jumlahPaket - 1; i++) {
-        for(int j = i + 1; j < jumlahPaket; j++) {
-            if(strcmp(paket[i]->penerima, paket[j]->penerima) > 0) {
-                temp = paket[i];
-                paket[i] = paket[j];
-                paket[j] = temp;
+    for (int gap = jumlahPaket / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < jumlahPaket; i++) {
+            temp = paket[i];
+            int j;
+            for (j = i; j >= gap && strcmp(paket[j - gap]->penerima, temp->penerima) > 0; j -= gap) {
+                paket[j] = paket[j - gap];
             }
+            paket[j] = temp;
         }
     }
     printf("\nData berhasil di sorting berdasarkan nama!\n");
@@ -377,13 +373,14 @@ void sortEstimasi(struct Paket *paket[], int jumlahPaket) {
 
     struct Paket *temp;
 
-    for(int i = 0; i < jumlahPaket - 1; i++) {
-        for(int j = i + 1; j < jumlahPaket; j++) {
-            if(paket[i]->berat > paket[j]->berat) {
-                temp = paket[i];
-                paket[i] = paket[j];
-                paket[j] = temp;
+    for (int gap = jumlahPaket / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < jumlahPaket; i++) {
+            temp = paket[i];
+            int j;
+            for (j = i; j >= gap && paket[j - gap]->berat > temp->berat; j -= gap) {
+                paket[j] = paket[j - gap];
             }
+            paket[j] = temp;
         }
     }
     printf("\nData berhasil di sorting estimasi!\n");
@@ -511,3 +508,4 @@ int main() {
     // Note: Idealnya free BST juga dilakukan secara rekursif sebelum exit
     return 0;
 }
+
