@@ -6,10 +6,6 @@
 #define MAX_PAKET 100
 #define MAX_TRACKING 100
 
-// ==========================================
-// 1. DATA STRUCTURES (STRUCT & ARRAY)
-// ==========================================
-
 struct Tracking {
     char tanggal[30];
     char waktu[20];
@@ -34,10 +30,6 @@ struct Paket {
     int jumlahTracking;
     struct Tracking tracking[MAX_TRACKING];
 };
-
-// ==========================================
-// 2. TREE DATA STRUCTURE (BINARY SEARCH TREE)
-// ==========================================
 
 struct TreeNode {
     struct Paket *paketPtr; // Menyimpan alamat memori paket
@@ -191,15 +183,6 @@ void tambahPaket(struct Paket *paket[], int *jumlahPaket) {
     }
     bersihkanBuffer();
 
-    int estimasiHari = 0;
-    printf("Estimasi Waktu (Berapa Hari) : ");
-    while (scanf("%d", &estimasiHari) != 1 || estimasiHari < 1) {
-        printf("Input tidak valid! Masukkan angka (minimal 1): ");
-        bersihkanBuffer();
-    }
-    bersihkanBuffer();
-    sprintf(paket[i]->estimasi, "%d Hari", estimasiHari);
-
     printf("\nDaftar Kota Jawa Timur:\n");
     for(int k = 0; k < JUMLAH_KOTA; k++) {
         printf("%d. %s\n", k + 1, kotaJatim[k]);
@@ -222,17 +205,19 @@ void tambahPaket(struct Paket *paket[], int *jumlahPaket) {
     bersihkanBuffer();
     strcpy(paket[i]->tujuan, kotaJatim[tujuanIdx - 1]);
 
-    printf("\n[Sistem] Menelusuri jalur Graph dengan BFS...\n");
-
     // Mencari rute dengan Graph BFS
     int path[11];
     int pathCount = findShortestPathBFS(asalIdx - 1, tujuanIdx - 1, path);
 
-    if (pathCount > 0) {
-        printf("[Sistem] Rute ditemukan melewati %d titik persinggahan.\n", pathCount);
+    int estimasiHari;
+    if (asalIdx == tujuanIdx) {
+        estimasiHari = 1;
+    } else if (pathCount > 0) {
+        estimasiHari = pathCount;
     } else {
-        printf("[Sistem] Rute tidak ditemukan! Menggunakan rute langsung.\n");
+        estimasiHari = 3;
     }
+    sprintf(paket[i]->estimasi, "%d Hari", estimasiHari);
 
     // Generate Tanggal Dinamis berdasarkan input estimasiHari
     char tgl[7][30];
@@ -461,11 +446,10 @@ int main() {
         printf("==============================\n");
 
         printf("1. Input Data Paket\n");
-        printf("2. Lihat Paket\n");
-        printf("3. Sorting by Nama\n");
-        printf("4. Sorting by Estimasi\n");
-        printf("5. Cari Paket (BST Search)\n");
-        printf("6. Keluar\n");
+        printf("2. Lihat Paket Berdasarkan nama\n");
+        printf("3. Lihat Paket berdasarkan estimasi\n");
+        printf("4. Cari Paket (BST Search)\n");
+        printf("5. Keluar\n");
 
         printf("\nPilih Menu : ");
         if (scanf("%d", &pilih) != 1) {
@@ -480,25 +464,24 @@ int main() {
                 tambahPaket(paket, &jumlahPaket);
                 break;
             case 2:
+                sortNama(paket, jumlahPaket);
                 tampilkanPaket(paket, jumlahPaket);
                 break;
             case 3:
-                sortNama(paket, jumlahPaket);
+                sortEstimasi(paket, jumlahPaket);
+                tampilkanPaket(paket, jumlahPaket);
                 break;
             case 4:
-                sortEstimasi(paket, jumlahPaket);
-                break;
-            case 5:
                 cariPaket(); // Tidak butuh passing array karena pakai BST global
                 break;
-            case 6:
+            case 5:
                 printf("\nProgram selesai.\n");
                 break;
             default:
                 printf("\nMenu tidak tersedia!\n");
         }
 
-    } while(pilih != 6);
+    } while(pilih != 5);
 
     // Free memori
     for(int i = 0; i < MAX_PAKET; i++) {
