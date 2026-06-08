@@ -8,17 +8,10 @@
     #include <string.h>
     #include <time.h>
 
-    // ============================================================
-    // KONSTANTA
-    // ============================================================
-
     #define MAX_PAKET     100
     #define MAX_TRACKING  50
     #define JUMLAH_KOTA   11
-
-    // ============================================================
-    // STRUKTUR DATA
-    // ============================================================
+    // Struktur Data
 
     typedef struct {
         char tanggal[30];
@@ -49,11 +42,8 @@
         struct TreeNode *right;
     } TreeNode;
 
-    // ============================================================
-    // DATA KOTA & GRAPH
-    // ============================================================
 
-    // Setiap tambah kota:
+    // Cara Tambah Kota tambah kota:
 
     // Tambah JUMLAH_KOTA
     // Tambah nama di array KOTA
@@ -83,9 +73,6 @@
         { 0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0 }, // Banyuwangi
     };
 
-    // ===========================================================
-    // UTILITAS
-    // ============================================================
 
     static void bersihkanBuffer(void) {
         int c;
@@ -113,9 +100,6 @@
         return pilihan - 1; // kembalikan index (0-based)
     }
 
-    // ============================================================
-    // BFS - PENCARIAN RUTE TERPENDEK
-    // ============================================================
 
     // Mengembalikan jumlah node dalam path, atau 0 jika tidak ditemukan
     static int cariBFS(int asal, int tujuan, int path[JUMLAH_KOTA]) {
@@ -157,10 +141,6 @@
         return count;
     }
 
-    // ============================================================
-    // BST
-    // ============================================================
-
     static TreeNode *bstInsert(TreeNode *node, Paket *pkt) {
         if (!node) {
             TreeNode *baru = malloc(sizeof(TreeNode));
@@ -190,10 +170,6 @@
         free(node);
     }
 
-    // ============================================================
-    // TRACKING BUILDER
-    // ============================================================
-
     static void initTracking(Tracking *t) {
         memset(t, 0, sizeof(Tracking));
     }
@@ -215,11 +191,10 @@
     }
 
     static void bangunRiwayatTracking(Paket *pkt, int pathCount, const int path[]) {
-        char tglAwal[30], tglMid[30], tglAkhir[30];
+        char tglAwal[30], tglAkhir[30];
         int estimasiHari = pkt->estimasi;
 
-        tanggalOffset(0,                              tglAwal,  sizeof(tglAwal));
-        tanggalOffset(estimasiHari > 1 ? estimasiHari / 2 : 0, tglMid, sizeof(tglMid));
+        tanggalOffset(0, tglAwal, sizeof(tglAwal));
         tanggalOffset(estimasiHari > 1 ? estimasiHari - 1 : 0, tglAkhir, sizeof(tglAkhir));
 
         char buf[200];
@@ -237,9 +212,11 @@
         tambahTracking(pkt, tglAwal, buf, pkt->kotaAsal, NULL, NULL, NULL);
 
         for (int p = 0; p < pathCount - 1; p++) {
+            char tglTransit[30];
+            tanggalOffset(p + 1, tglTransit, sizeof(tglTransit));
             char rute[110];
             snprintf(rute, sizeof(rute), "%s -> %s", KOTA[path[p]], KOTA[path[p + 1]]);
-            tambahTracking(pkt, tglMid, "Paket sedang dalam perjalanan / transit.",
+            tambahTracking(pkt, tglTransit, "Paket sedang dalam perjalanan / transit.",
                         NULL, NULL, NULL, rute);
         }
 
@@ -250,10 +227,7 @@
         tambahTracking(pkt, tglAkhir, buf, NULL, "Andi (Delivery)", "W 6835 FU", NULL);
     }
 
-    // ============================================================
-    // FITUR UTAMA
-    // ============================================================
-
+    // Tambah Paket
     static void tambahPaket(Paket *paket[], int *jumlahPaket, TreeNode **root) {
         if (*jumlahPaket >= MAX_PAKET) {
             printf("Kapasitas paket penuh!\n");
@@ -327,7 +301,7 @@
         }
     }
 
-    // Shell Sort generik menggunakan function pointer untuk fleksibilitas
+    // Shell Sort generik menggunakan function pointer
     static void shellSort(Paket *paket[], int n, int (*cmp)(const Paket *, const Paket *)) {
         for (int gap = n / 2; gap > 0; gap /= 2) {
             for (int i = gap; i < n; i++) {
@@ -383,10 +357,6 @@
         }
         printf("\n");
     }
-
-    // ============================================================
-    // MAIN
-    // ============================================================
 
     int main(void) {
         Paket *paket[MAX_PAKET];
